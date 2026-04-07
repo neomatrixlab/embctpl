@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Fast checks: clang-format, cppcheck, clang-tidy (needs build/host-debug/compile_commands.json).
+# Skip hooks: git commit --no-verify
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+bash "${ROOT}/scripts/check-format.sh"
+echo "pre-commit: format check passed"
+
+bash "${ROOT}/scripts/check-cppcheck.sh"
+echo "pre-commit: cppcheck passed"
+
+COMPILE_DB="${ROOT}/build/host-debug/compile_commands.json"
+if [[ -f "${COMPILE_DB}" ]]; then
+  bash "${ROOT}/scripts/check-tidy.sh"
+  echo "pre-commit: clang-tidy passed"
+else
+  echo "pre-commit: missing ${COMPILE_DB}" >&2
+  echo "pre-commit: run: cmake --preset host-debug --fresh && cmake --build --preset host-debug -j" >&2
+  echo "pre-commit: clang-tidy is required and cannot be skipped." >&2
+  exit 1
+fi

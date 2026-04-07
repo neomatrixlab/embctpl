@@ -1,0 +1,14 @@
+---
+Checks: >
+  -*,
+  clang-analyzer-*,
+  readability-*,
+  performance-*,
+  portability-*
+
+# CI uses scripts/check-tidy.sh; treat tidy findings as errors for project code.
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+# Reduce noise from system and third-party headers pulled into TU (e.g. GoogleTest).
+ExcludeHeaderFilterRegex: '/usr/(include|lib|local)|.*/_deps/|/opt/googletest'
+FormatStyle: file

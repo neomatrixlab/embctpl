@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: MIT
+# Debian image: jobs install tools in before_script.
+
+image: debian:bookworm
+
+variables:
+  GIT_STRATEGY: fetch
+
+stages:
+  - lint
+  - test
+  - cross
+
+lint:format:
+  stage: lint
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends clang-format git
+  script:
+    - bash scripts/check-format.sh
+
+lint:cppcheck:
+  stage: lint
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends cppcheck git
+  script:
+    - bash scripts/check-cppcheck.sh
+
+lint:tidy:
+  stage: lint
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends
+        build-essential cmake ninja-build g++ git clang-tidy ca-certificates
+  script:
+    - cmake --preset host-debug --fresh
+    - cmake --build --preset host-debug -j
+    - bash scripts/check-tidy.sh
+
+test:host:
+  stage: test
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends
+        build-essential cmake ninja-build g++ git lcov ca-certificates
+  script:
+    - cmake --preset coverage --fresh
+    - cmake --build --preset coverage -j
+    - cmake --build --preset coverage --target coverage
+  artifacts:
+    when: always
+    paths:
+      - build/coverage/coverage-html/
+    expire_in: 1 week
+
+test:asan-ubsan:
+  stage: test
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends
+        build-essential cmake ninja-build g++ git ca-certificates
+  script:
+    - cmake --preset asan-ubsan --fresh
+    - cmake --build --preset asan-ubsan -j
+    - ctest --preset asan-ubsan
+
+# Requires ARM GNU toolchain at the path in cmake/toolchains/arm-linux-gnu.cmake.
+# Install it on the runner or use a custom image; debian:bookworm alone does not provide it.
+build:cross:
+  stage: cross
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends
+        build-essential cmake ninja-build git
+  script:
+    - cmake --preset cross-release --fresh
+    - cmake --build --preset cross-release -j

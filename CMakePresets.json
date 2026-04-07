@@ -1,0 +1,88 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
+
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_PREFIX_PATH": "/opt/googletest",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF",
+        "ENABLE_SANITIZER": "OFF",
+        "ENABLE_COVERAGE": "OFF"
+      }
+    },
+    {
+      "name": "host-debug",
+      "inherits": "base",
+      "displayName": "Host Debug",
+      "cacheVariables": {
+        "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "asan-ubsan",
+      "inherits": "base",
+      "displayName": "Host + ASan/UBSan",
+      "cacheVariables": {
+        "BUILD_TESTING": "ON",
+        "ENABLE_SANITIZER": "ON"
+      }
+    },
+    {
+      "name": "coverage",
+      "inherits": "base",
+      "displayName": "Host + gcov",
+      "cacheVariables": {
+        "BUILD_TESTING": "ON",
+        "ENABLE_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "cross-debug",
+      "inherits": "base",
+      "displayName": "Cross Debug",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/arm-linux-gnu.cmake"
+      }
+    },
+    {
+      "name": "cross-release",
+      "inherits": "base",
+      "displayName": "Cross Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/arm-linux-gnu.cmake"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    { "name": "host-debug", "configurePreset": "host-debug" },
+    { "name": "asan-ubsan", "configurePreset": "asan-ubsan" },
+    { "name": "coverage", "configurePreset": "coverage" },
+    { "name": "cross-debug", "configurePreset": "cross-debug" },
+    { "name": "cross-release", "configurePreset": "cross-release" }
+  ],
+
+  "packagePresets": [
+    { "name": "host-debug", "configurePreset": "host-debug" },
+    { "name": "cross-debug", "configurePreset": "cross-debug" },
+    { "name": "cross-release", "configurePreset": "cross-release" }
+  ],
+
+  "testPresets": [
+    { "name": "host-debug", "configurePreset": "host-debug" },
+    { "name": "coverage", "configurePreset": "coverage" },
+    { "name": "asan-ubsan", "configurePreset": "asan-ubsan" }
+  ]
+}

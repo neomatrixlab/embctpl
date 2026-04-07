@@ -1,0 +1,79 @@
+# Build and output
+build/
+build-*/
+output/
+install/
+CMakeUserPresets.json
+
+# Prerequisites / dependency tracking
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug
+*.dSYM/
+*.su
+*.idb
+*.pdb
+*.dwo
+
+# Kernel module artifacts
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# Tags / IDE
+TAGS
+tags
+.cache/
+.idea/
+.vscode/
+*.swp
+*~
+
+# Coverage
+*.gcno
+*.gcda
+coverage.info
+htmlcov/
+
+# Python (optional tooling)
+__pycache__/
+*.py[cod]
